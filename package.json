@@ -24,6 +24,9 @@
     "/cjs",
     "/esm"
   ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "npm run build-cjs && npm run build-esm",
     "build-cjs": "tsc -p tsconfig.cjs.json",
