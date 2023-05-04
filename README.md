@@ -1,11 +1,11 @@
 # @jalik/fetch-client
 
-![GitHub package.json version](https://img.shields.io/github/package-json/v/jalik/fetch-client.svg)
-![Build Status](https://github.com/jalik/fetch-client/actions/workflows/node.js.yml/badge.svg)
-![Last commit](https://img.shields.io/github/last-commit/jalik/fetch-client.svg)
-[![GitHub issues](https://img.shields.io/github/issues/jalik/fetch-client.svg)](https://github.com/jalik/fetch-client/issues)
-![GitHub](https://img.shields.io/github/license/jalik/fetch-client.svg)
-![npm](https://img.shields.io/npm/dt/@jalik/fetch-client.svg)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/jalik/js-fetch-client.svg)
+![Build Status](https://github.com/jalik/js-fetch-client/actions/workflows/node.js.yml/badge.svg)
+![Last commit](https://img.shields.io/github/last-commit/jalik/js-fetch-client.svg)
+[![GitHub issues](https://img.shields.io/github/issues/jalik/js-fetch-client.svg)](https://github.com/jalik/js-fetch-client/issues)
+![GitHub](https://img.shields.io/github/license/jalik/js-fetch-client.svg)
+![npm](https://img.shields.io/npm/dt/@jalik/js-fetch-client.svg)
 
 Wrapper for Fetch with error handling and other DX improvements.
 
@@ -19,10 +19,12 @@ Wrapper for Fetch with error handling and other DX improvements.
 * Transform request options and headers before sending
 * Transform response data before returning
 
+**Requires Fetch support in Browser or Node (>=18), no polyfill provided.**
+
 ## Sandbox
 
 Play with the lib here:
-https://codesandbox.io/s/jalik-logger-default-example-75o5hx
+https://codesandbox.io/s/jalik-fetch-client-demo-8rolt2?file=/src/index.js
 
 ## Creating a client
 
