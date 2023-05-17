@@ -46,10 +46,10 @@ export interface FetchClientConfig {
 }
 
 export class FetchClient {
-  private config: FetchClientConfig & {
+  private readonly config: FetchClientConfig & {
     headers: Record<string, string>,
     options: RequestInit,
-    responseType: 'arraybuffer' | 'blob' | 'json' | 'text'
+    responseType: 'arraybuffer' | 'blob' | 'json' | 'text' | undefined
     transformRequest: Array<(url: string, options: RequestInit) => RequestInit>
     transformResponse: Array<(response: any) => any>
   }
@@ -132,9 +132,16 @@ export class FetchClient {
       .then(async (response: Response): Promise<FetchClientResponse> => {
         let data: unknown
         const { responseType } = this.config
+        const contentLength = response.headers.get('content-length')
 
-        // Convert data using response type.
-        if (opts.method !== 'OPTIONS' && opts.method !== 'HEAD') {
+        if (!responseType) {
+          data = response
+        } else if (responseType &&
+          opts.method !== 'OPTIONS' &&
+          opts.method !== 'HEAD' &&
+          contentLength != null &&
+          parseInt(contentLength, 10) > 0) {
+          // Convert data.
           if (responseType === 'json') {
             data = await response.json()
           } else if (responseType === 'text') {

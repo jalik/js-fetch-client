@@ -14,6 +14,7 @@ const paths = {
   blob: '/blob',
   error: '/error',
   headers: '/headers',
+  noBody: '/no-body',
   resources: '/resources',
   resource: '/resources/1'
 }
@@ -21,6 +22,10 @@ const paths = {
 server.all(paths.error, (req, rep) => {
   rep.status(400)
     .send({ error: 'Bad Request' })
+})
+
+server.all(paths.noBody, (req, rep) => {
+  rep.status(204).send()
 })
 
 server.get(paths.blob, () => {
@@ -284,6 +289,16 @@ describe('new FetchClient()', () => {
       })
     })
 
+    describe('with valid responseType', () => {
+      const client = new FetchClient()
+
+      it('should return data only when "content-length" > 0', async () => {
+        const resp = await client.get(serverUrl + paths.noBody)
+        expect(resp.status).toBe(204)
+        expect(resp.data).toBeUndefined()
+      })
+    })
+
     describe('with responseType = "arraybuffer"', () => {
       const client = new FetchClient({
         responseType: 'arraybuffer'
@@ -333,6 +348,16 @@ describe('new FetchClient()', () => {
         expect(resp.status).toBe(200)
         expect(resp.data).toBeDefined()
         expect(typeof resp.data).toBe('string')
+      })
+    })
+
+    describe('with responseType = undefined', () => {
+      const client = new FetchClient({ responseType: undefined })
+
+      it('should return a Response', async () => {
+        const resp = await client.get(serverUrl + paths.resource)
+        expect(resp.status).toBe(200)
+        expect(resp.data).toBeInstanceOf(Response)
       })
     })
   })
@@ -385,7 +410,7 @@ describe('new FetchClient()', () => {
         error = e
       }
       expect(error).toBeDefined()
-      expect(error instanceof FetchResponseError).toBe(true)
+      expect(error).toBeInstanceOf(FetchResponseError)
       expect(error.response).toBeDefined()
       expect(error.response.data).toBeDefined()
       expect(error.response.status).toBeDefined()
