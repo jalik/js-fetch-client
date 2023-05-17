@@ -1,6 +1,6 @@
 {
   "name": "@jalik/fetch-client",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Fetch wrapper to manage requests/responses more easier",
   "license": "MIT",
   "keywords": [],
