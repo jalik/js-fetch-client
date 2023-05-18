@@ -132,15 +132,13 @@ export class FetchClient {
       .then(async (response: Response): Promise<FetchClientResponse> => {
         let data: unknown
         const { responseType } = this.config
-        const contentLength = response.headers.get('content-length')
+        const contentType = response.headers.get('content-type')
 
         if (!responseType) {
           data = response
-        } else if (responseType &&
+        } else if (responseType && contentType &&
           opts.method !== 'OPTIONS' &&
-          opts.method !== 'HEAD' &&
-          contentLength != null &&
-          parseInt(contentLength, 10) > 0) {
+          opts.method !== 'HEAD') {
           // Convert data.
           if (responseType === 'json') {
             data = await response.json()

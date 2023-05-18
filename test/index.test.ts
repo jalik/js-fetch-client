@@ -292,9 +292,10 @@ describe('new FetchClient()', () => {
     describe('with valid responseType', () => {
       const client = new FetchClient()
 
-      it('should return data only when "content-length" > 0', async () => {
+      it('should return undefined when "content-type" is not defined', async () => {
         const resp = await client.get(serverUrl + paths.noBody)
         expect(resp.status).toBe(204)
+        expect(resp.headers['content-type']).toBeUndefined()
         expect(resp.data).toBeUndefined()
       })
     })
