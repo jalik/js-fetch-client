@@ -400,6 +400,16 @@ describe('new FetchClient()', () => {
     })
   })
 
+  describe('with request responseType different than options.responseType', () => {
+    const client = new FetchClient({ responseType: 'json' })
+
+    it('should use request responseType', async () => {
+      const resp = await client.get(serverUrl + paths.resource, { responseType: 'text' })
+      expect(resp.status).toBe(200)
+      expect(typeof resp.data).toBe('string')
+    })
+  })
+
   describe('with server error', () => {
     const client = new FetchClient()
 

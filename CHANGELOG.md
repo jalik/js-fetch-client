@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.3 (2023-05-18)
+
+- Allow passing `responseType` on each request options
+
 ## v1.0.2 (2023-05-18)
 
 - Fixed handling of response with no Body (ex: code 204) by checking `content-type` header instead of `content-length`

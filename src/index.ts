@@ -14,6 +14,10 @@ export class FetchResponseError extends Error {
   }
 }
 
+export type FetchOptions = RequestInit & {
+  responseType?: 'arraybuffer' | 'blob' | 'json' | 'text'
+}
+
 export interface FetchClientConfig {
   /**
    * The base URL to use when executing a relative request.
@@ -74,7 +78,7 @@ export class FetchClient {
    * @param url
    * @param options
    */
-  delete (url: string, options?: RequestInit): Promise<FetchClientResponse> {
+  delete (url: string, options?: FetchOptions): Promise<FetchClientResponse> {
     return this.fetch(url, {
       ...options,
       method: 'DELETE'
@@ -86,7 +90,7 @@ export class FetchClient {
    * @param url
    * @param options
    */
-  fetch (url: string, options?: RequestInit): Promise<FetchClientResponse> {
+  fetch (url: string, options?: FetchOptions): Promise<FetchClientResponse> {
     // Merge headers.
     const headers = new Headers({
       ...this.config.options.headers,
@@ -95,7 +99,7 @@ export class FetchClient {
     })
 
     // Merge options.
-    let opts: RequestInit = {
+    let opts: FetchOptions = {
       ...this.config.options,
       ...options,
       headers
@@ -131,8 +135,10 @@ export class FetchClient {
     return fetch(targetUrl, opts)
       .then(async (response: Response): Promise<FetchClientResponse> => {
         let data: unknown
-        const { responseType } = this.config
         const contentType = response.headers.get('content-type')
+        const responseType = typeof opts.responseType !== 'undefined'
+          ? opts.responseType
+          : this.config.responseType
 
         if (!responseType) {
           data = response
@@ -184,7 +190,7 @@ export class FetchClient {
    * @param url
    * @param options
    */
-  get (url: string, options?: RequestInit): Promise<FetchClientResponse> {
+  get (url: string, options?: FetchOptions): Promise<FetchClientResponse> {
     return this.fetch(url, {
       ...options,
       method: 'GET'
@@ -196,7 +202,7 @@ export class FetchClient {
    * @param url
    * @param options
    */
-  head (url: string, options?: RequestInit): Promise<FetchClientResponse> {
+  head (url: string, options?: FetchOptions): Promise<FetchClientResponse> {
     return this.fetch(url, {
       ...options,
       method: 'HEAD'
@@ -208,7 +214,7 @@ export class FetchClient {
    * @param url
    * @param options
    */
-  options (url: string, options?: RequestInit): Promise<FetchClientResponse> {
+  options (url: string, options?: FetchOptions): Promise<FetchClientResponse> {
     return this.fetch(url, {
       ...options,
       method: 'OPTIONS'
@@ -221,7 +227,7 @@ export class FetchClient {
    * @param body
    * @param options
    */
-  patch (url: string, body?: any, options?: RequestInit): Promise<FetchClientResponse> {
+  patch (url: string, body?: any, options?: FetchOptions): Promise<FetchClientResponse> {
     return this.fetch(url, {
       ...options,
       body,
@@ -235,7 +241,7 @@ export class FetchClient {
    * @param body
    * @param options
    */
-  post (url: string, body?: any, options?: RequestInit): Promise<FetchClientResponse> {
+  post (url: string, body?: any, options?: FetchOptions): Promise<FetchClientResponse> {
     return this.fetch(url, {
       ...options,
       body,
@@ -249,7 +255,7 @@ export class FetchClient {
    * @param body
    * @param options
    */
-  put (url: string, body?: any, options?: RequestInit): Promise<FetchClientResponse> {
+  put (url: string, body?: any, options?: FetchOptions): Promise<FetchClientResponse> {
     return this.fetch(url, {
       ...options,
       body,
@@ -283,7 +289,7 @@ export class FetchClient {
    * @param name
    * @param value
    */
-  setOption (name: keyof RequestInit, value: any): void {
+  setOption (name: keyof FetchOptions, value: any): void {
     this.config.options = {
       ...this.config.options,
       [name]: value
@@ -294,7 +300,7 @@ export class FetchClient {
    * Sets default options.
    * @param options
    */
-  setOptions (options: RequestInit): void {
+  setOptions (options: FetchOptions): void {
     this.config.options = { ...options }
   }
 }
