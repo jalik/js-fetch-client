@@ -135,6 +135,7 @@ export class FetchClient {
     return fetch(targetUrl, opts)
       .then(async (response: Response): Promise<FetchClientResponse> => {
         let data: unknown
+        const contentLength = response.headers.get('content-length')
         const contentType = response.headers.get('content-type')
         const responseType = typeof opts.responseType !== 'undefined'
           ? opts.responseType
@@ -142,9 +143,8 @@ export class FetchClient {
 
         if (!responseType) {
           data = response
-        } else if (responseType && contentType &&
-          opts.method !== 'OPTIONS' &&
-          opts.method !== 'HEAD') {
+        } else if ((contentType || (contentLength && contentLength !== '0')) &&
+          opts.method && !['HEAD', 'OPTIONS'].includes(opts.method)) {
           // Convert data.
           if (responseType === 'json') {
             data = await response.json()
