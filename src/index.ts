@@ -1,7 +1,19 @@
 export interface FetchClientResponse<T = any> {
+  /**
+   * Response data.
+   */
   data: T
+  /**
+   * Response headers.
+   */
   headers: Record<string, string>
+  /**
+   * Response status code (ex: 200).
+   */
   status: number
+  /**
+   * Response status text (ex: "OK").
+   */
   statusText: string
 }
 
@@ -14,8 +26,13 @@ export class FetchResponseError extends Error {
   }
 }
 
+export type ResponseType = 'arraybuffer' | 'blob' | 'json' | 'text' | undefined
+
 export type FetchOptions = RequestInit & {
-  responseType?: 'arraybuffer' | 'blob' | 'json' | 'text'
+  /**
+   * The type of response to expect.
+   */
+  responseType?: ResponseType
 }
 
 export interface FetchClientConfig {
@@ -32,10 +49,9 @@ export interface FetchClientConfig {
    */
   options?: RequestInit
   /**
-   * The type of response to expect,
-   * it will call resp.arrayBuffer(), resp.blob(), resp.json() or resp.text()
+   * The type of response to expect.
    */
-  responseType?: 'arraybuffer' | 'blob' | 'json' | 'text'
+  responseType?: ResponseType
   /**
    * Allow transforming a request.
    * @param url
