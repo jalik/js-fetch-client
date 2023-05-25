@@ -62,7 +62,7 @@ export interface FetchClientConfig {
    * Allow transforming a response.
    * @param response
    */
-  transformResponse?: Array<(response: any) => any>
+  transformResponse?: Array<(data: any, response: Response) => any>
 }
 
 export class FetchClient {
@@ -71,7 +71,7 @@ export class FetchClient {
     options: RequestInit,
     responseType: 'arraybuffer' | 'blob' | 'json' | 'text' | undefined
     transformRequest: Array<(url: string, options: RequestInit) => RequestInit>
-    transformResponse: Array<(response: any) => any>
+    transformResponse: Array<(data: any, response: Response) => any>
   }
 
   constructor (config?: FetchClientConfig) {
@@ -176,7 +176,7 @@ export class FetchClient {
         // Transform response.
         if (response.ok && this.config.transformResponse.length) {
           this.config.transformResponse.forEach((transform) => {
-            data = transform(data)
+            data = transform(data, response)
           })
         }
 

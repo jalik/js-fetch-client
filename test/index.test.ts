@@ -458,11 +458,17 @@ describe('new FetchClient()', () => {
   })
 
   describe('with options.transformResponse', () => {
+    const update = { a: true }
+
     const client = new FetchClient({
       transformResponse: [
-        (resp) => ({
-          ...resp,
-          test: true
+        (data, response) => ({
+          ...data,
+          response
+        }),
+        (data) => ({
+          ...data,
+          ...update
         })
       ]
     })
@@ -470,7 +476,12 @@ describe('new FetchClient()', () => {
     it('should transform response', async () => {
       const resp = await client.get(serverUrl + paths.headers)
       expect(resp.status).toBe(200)
-      expect(resp.data.test).toBe(true)
+      expect(resp.data.a).toBe(update.a)
+    })
+
+    it('should pass Response as second argument to callbacks', async () => {
+      const resp = await client.get(serverUrl + paths.headers)
+      expect(resp.data.response).toBeInstanceOf(Response)
     })
   })
 

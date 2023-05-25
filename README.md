@@ -211,11 +211,11 @@ const client = new FetchClient({
       },
     }),
   ],
-  // Transform response before returning.
+  // Transform response Body before returning.
   // Several functions can be passed (all executed sequentially).
   transformResponse: [
-    (response) => ({
-      ...response,
+    (data, response) => ({
+      ...data,
       // Add response date to each response
       receivedAt: Date.now(),
     }),
