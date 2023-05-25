@@ -38,7 +38,14 @@ export class FetchResponseError extends Error {
   }
 }
 
-export type ResponseType = 'arrayBuffer' | 'blob' | 'formData' | 'json' | 'text' | undefined
+export type ResponseType =
+  'arrayBuffer'
+  | 'blob'
+  | 'formData'
+  | 'json'
+  | 'stream'
+  | 'text'
+  | undefined
 
 export type FetchOptions = RequestInit & {
   /**
@@ -184,6 +191,8 @@ export class FetchClient {
             body = await response.arrayBuffer()
           } else if (responseType === 'formData') {
             body = await response.formData()
+          } else if (responseType === 'stream') {
+            body = await response.body
           }
         }
 

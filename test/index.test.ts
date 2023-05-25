@@ -442,6 +442,19 @@ describe('new FetchClient(options)', () => {
       })
     })
 
+    describe('with responseType = "stream"', () => {
+      const client = new FetchClient({
+        responseType: 'stream'
+      })
+
+      it('should return body as ReadableStream', async () => {
+        const resp = await client.get(serverUrl + paths.resource)
+        expect(resp.status).toBe(200)
+        expect(resp.body).toBeDefined()
+        expect(resp.body).toBeInstanceOf(ReadableStream)
+      })
+    })
+
     describe('with responseType = "text"', () => {
       const client = new FetchClient({
         responseType: 'text'
