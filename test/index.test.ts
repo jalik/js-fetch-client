@@ -125,10 +125,10 @@ describe('new FetchClient()', () => {
         expect(resp.headers).toBeDefined()
       })
 
-      it('should return body if any in response.data', async () => {
+      it('should return body if any in response.body', async () => {
         const resp = await client.delete(serverUrl + paths.resource)
-        expect(resp.data).toBeDefined()
-        expect(resp.data.method).toBe('DELETE')
+        expect(resp.body).toBeDefined()
+        expect(resp.body.method).toBe('DELETE')
       })
     })
 
@@ -139,11 +139,11 @@ describe('new FetchClient()', () => {
         expect(resp.headers).toBeDefined()
       })
 
-      it('should return body in response.data', async () => {
+      it('should return body in response.body', async () => {
         const resp = await client.get(serverUrl + paths.resource)
-        expect(resp.data).toBeDefined()
-        expect(resp.data.method).toBe('GET')
-        expect(resp.data.data).toBeDefined()
+        expect(resp.body).toBeDefined()
+        expect(resp.body.method).toBe('GET')
+        expect(resp.body.data).toBeDefined()
       })
     })
 
@@ -156,7 +156,7 @@ describe('new FetchClient()', () => {
 
       it('should not return body', async () => {
         const resp = await client.head(serverUrl + paths.resource)
-        expect(resp.data).toBeUndefined()
+        expect(resp.body).toBeUndefined()
       })
     })
 
@@ -174,7 +174,7 @@ describe('new FetchClient()', () => {
 
       it('should not return body', async () => {
         const resp = await client.options(serverUrl + paths.resource)
-        expect(resp.data).toBeUndefined()
+        expect(resp.body).toBeUndefined()
       })
     })
 
@@ -187,11 +187,11 @@ describe('new FetchClient()', () => {
         expect(resp.headers).toBeDefined()
       })
 
-      it('should return body if any in response.data', async () => {
+      it('should return body if any in response.body', async () => {
         const resp = await client.patch(serverUrl + paths.resource, data)
-        expect(resp.data).toBeDefined()
-        expect(resp.data.method).toBe('PATCH')
-        expect(resp.data.data).toEqual(data)
+        expect(resp.body).toBeDefined()
+        expect(resp.body.method).toBe('PATCH')
+        expect(resp.body.data).toEqual(data)
       })
     })
 
@@ -204,11 +204,11 @@ describe('new FetchClient()', () => {
         expect(resp.headers).toBeDefined()
       })
 
-      it('should return body if any in response.data', async () => {
+      it('should return body if any in response.body', async () => {
         const resp = await client.post(serverUrl + paths.resources, data)
-        expect(resp.data).toBeDefined()
-        expect(resp.data.method).toBe('POST')
-        expect(resp.data.data).toEqual(data)
+        expect(resp.body).toBeDefined()
+        expect(resp.body.method).toBe('POST')
+        expect(resp.body.data).toEqual(data)
       })
 
       describe('with string as body', () => {
@@ -218,9 +218,9 @@ describe('new FetchClient()', () => {
           })
           expect(resp.status).toBe(201)
           expect(resp.headers).toBeDefined()
-          expect(resp.data.method).toBe('POST')
-          expect(resp.data.data).toEqual(data)
-          expect(resp.data.headers['content-type']).toEqual('application/json')
+          expect(resp.body.method).toBe('POST')
+          expect(resp.body.data).toEqual(data)
+          expect(resp.body.headers['content-type']).toEqual('application/json')
         })
       })
     })
@@ -234,11 +234,11 @@ describe('new FetchClient()', () => {
         expect(resp.headers).toBeDefined()
       })
 
-      it('should return body if any in response.data', async () => {
+      it('should return body if any in response.body', async () => {
         const resp = await client.put(serverUrl + paths.resource, data)
-        expect(resp.data).toBeDefined()
-        expect(resp.data.method).toBe('PUT')
-        expect(resp.data.data).toEqual(data)
+        expect(resp.body).toBeDefined()
+        expect(resp.body.method).toBe('PUT')
+        expect(resp.body.data).toEqual(data)
       })
     })
 
@@ -249,8 +249,8 @@ describe('new FetchClient()', () => {
 
         const resp = await client.get(serverUrl + paths.headers)
         expect(resp.status).toBe(200)
-        expect(resp.data.headers).toBeDefined()
-        expect(resp.data.headers['api-key']).toEqual(apiKey)
+        expect(resp.body.headers).toBeDefined()
+        expect(resp.body.headers['api-key']).toEqual(apiKey)
       })
 
       describe('with null or undefined', () => {
@@ -261,8 +261,8 @@ describe('new FetchClient()', () => {
 
           const resp = await client.get(serverUrl + paths.headers)
           expect(resp.status).toBe(200)
-          expect(resp.data.headers).toBeDefined()
-          expect(resp.data.headers['api-key']).toBeUndefined()
+          expect(resp.body.headers).toBeDefined()
+          expect(resp.body.headers['api-key']).toBeUndefined()
         })
       })
     })
@@ -274,8 +274,8 @@ describe('new FetchClient()', () => {
 
         const resp = await client.get(serverUrl + paths.headers)
         expect(resp.status).toBe(200)
-        expect(resp.data.headers).toBeDefined()
-        expect(resp.data.headers.test).toEqual(headers.test)
+        expect(resp.body.headers).toBeDefined()
+        expect(resp.body.headers.test).toEqual(headers.test)
       })
     })
 
@@ -288,8 +288,8 @@ describe('new FetchClient()', () => {
 
         const resp = await client.get(serverUrl + paths.headers)
         expect(resp.status).toBe(200)
-        expect(resp.data.headers).toBeDefined()
-        expect(resp.data.headers['sec-fetch-mode']).toBe(options.mode)
+        expect(resp.body.headers).toBeDefined()
+        expect(resp.body.headers['sec-fetch-mode']).toBe(options.mode)
       })
     })
 
@@ -302,8 +302,8 @@ describe('new FetchClient()', () => {
 
         const resp = await client.get(serverUrl + paths.headers)
         expect(resp.status).toBe(200)
-        expect(resp.data.headers).toBeDefined()
-        expect(resp.data.headers['sec-fetch-mode']).toBe(options.mode)
+        expect(resp.body.headers).toBeDefined()
+        expect(resp.body.headers['sec-fetch-mode']).toBe(options.mode)
       })
     })
   })
@@ -316,17 +316,17 @@ describe('new FetchClient()', () => {
     it('should prepend baseUrl to relative URL', async () => {
       const resp = await client.get(paths.resource)
       expect(resp.status).toBe(200)
-      expect(resp.data.data.id).toBeDefined()
+      expect(resp.body.data.id).toBeDefined()
 
       const resp2 = await client.get(paths.resource.substring(1))
       expect(resp2.status).toBe(200)
-      expect(resp2.data.data.id).toBeDefined()
+      expect(resp2.body.data.id).toBeDefined()
     })
 
     it('should not prepend baseUrl to absolute URL', async () => {
       const resp = await client.get(serverUrl + paths.resource)
       expect(resp.status).toBe(200)
-      expect(resp.data.data.id).toBeDefined()
+      expect(resp.body.data.id).toBeDefined()
     })
   })
 
@@ -337,7 +337,7 @@ describe('new FetchClient()', () => {
       it('should use json as default value', async () => {
         const resp = await client.get(serverUrl + paths.resource)
         expect(resp.status).toBe(200)
-        expect(resp.data).toBeDefined()
+        expect(resp.body).toBeDefined()
       })
     })
 
@@ -347,20 +347,20 @@ describe('new FetchClient()', () => {
         responseType: 'invalid'
       })
 
-      it('should return no data', async () => {
+      it('should return response.body = undefined', async () => {
         const resp = await client.get(serverUrl + paths.blob)
         expect(resp.status).toBe(200)
-        expect(resp.data).not.toBeDefined()
+        expect(resp.body).not.toBeDefined()
       })
     })
 
     describe('with responseType = undefined', () => {
       const client = new FetchClient({ responseType: undefined })
 
-      it('should return response.data = undefined', async () => {
+      it('should return response.body = undefined', async () => {
         const resp = await client.get(serverUrl + paths.resource)
         expect(resp.status).toBe(200)
-        expect(resp.data).toBeUndefined()
+        expect(resp.body).toBeUndefined()
       })
     })
 
@@ -369,11 +369,11 @@ describe('new FetchClient()', () => {
         responseType: 'arraybuffer'
       })
 
-      it('should return data as ArrayBuffer', async () => {
+      it('should return body as ArrayBuffer', async () => {
         const resp = await client.get(serverUrl + paths.blob)
         expect(resp.status).toBe(200)
-        expect(resp.data).toBeDefined()
-        expect(resp.data instanceof ArrayBuffer).toBe(true)
+        expect(resp.body).toBeDefined()
+        expect(resp.body instanceof ArrayBuffer).toBe(true)
       })
     })
 
@@ -382,11 +382,11 @@ describe('new FetchClient()', () => {
         responseType: 'blob'
       })
 
-      it('should return data as Blob', async () => {
+      it('should return body as Blob', async () => {
         const resp = await client.get(serverUrl + paths.blob)
         expect(resp.status).toBe(200)
-        expect(resp.data).toBeDefined()
-        expect(resp.data instanceof Blob).toBe(true)
+        expect(resp.body).toBeDefined()
+        expect(resp.body instanceof Blob).toBe(true)
       })
     })
 
@@ -395,11 +395,11 @@ describe('new FetchClient()', () => {
         responseType: 'json'
       })
 
-      it('should return data as JSON', async () => {
+      it('should return body as JSON', async () => {
         const resp = await client.get(serverUrl + paths.resource)
         expect(resp.status).toBe(200)
-        expect(resp.data).toBeDefined()
-        expect(typeof resp.data).toBe('object')
+        expect(resp.body).toBeDefined()
+        expect(typeof resp.body).toBe('object')
       })
     })
 
@@ -408,11 +408,11 @@ describe('new FetchClient()', () => {
         responseType: 'text'
       })
 
-      it('should return data as string', async () => {
+      it('should return body as string', async () => {
         const resp = await client.get(serverUrl + paths.resource)
         expect(resp.status).toBe(200)
-        expect(resp.data).toBeDefined()
-        expect(typeof resp.data).toBe('string')
+        expect(resp.body).toBeDefined()
+        expect(typeof resp.body).toBe('string')
       })
     })
 
@@ -422,7 +422,7 @@ describe('new FetchClient()', () => {
       it('should not use responseType', async () => {
         const resp = await client.delete(serverUrl + paths.noBody)
         expect(resp.status).toBe(204)
-        expect(resp.data).toBeUndefined()
+        expect(resp.body).toBeUndefined()
       })
     })
 
@@ -432,7 +432,7 @@ describe('new FetchClient()', () => {
       it('should use responseType', async () => {
         const resp = await client.get(serverUrl + paths.resourceWithoutContentType)
         expect(resp.status).toBe(200)
-        expect(resp.data).toBeUndefined()
+        expect(resp.body).toBeUndefined()
       })
     })
   })
@@ -452,8 +452,8 @@ describe('new FetchClient()', () => {
     it('should transform request options', async () => {
       const resp = await client.get(serverUrl + paths.headers)
       expect(resp.status).toBe(200)
-      expect(resp.data.headers).toBeDefined()
-      expect(resp.data.headers.test).toBe('true')
+      expect(resp.body.headers).toBeDefined()
+      expect(resp.body.headers.test).toBe('true')
     })
   })
 
@@ -462,12 +462,12 @@ describe('new FetchClient()', () => {
 
     const client = new FetchClient({
       transformResponse: [
-        (data, response) => ({
-          ...data,
+        (body, response) => ({
+          ...body,
           response
         }),
-        (data) => ({
-          ...data,
+        (body) => ({
+          ...body,
           ...update
         })
       ]
@@ -476,12 +476,12 @@ describe('new FetchClient()', () => {
     it('should transform response', async () => {
       const resp = await client.get(serverUrl + paths.headers)
       expect(resp.status).toBe(200)
-      expect(resp.data.a).toBe(update.a)
+      expect(resp.body.a).toBe(update.a)
     })
 
     it('should pass Response as second argument to callbacks', async () => {
       const resp = await client.get(serverUrl + paths.headers)
-      expect(resp.data.response).toBeInstanceOf(Response)
+      expect(resp.body.response).toBeInstanceOf(Response)
     })
   })
 
@@ -491,7 +491,7 @@ describe('new FetchClient()', () => {
     it('should use request responseType', async () => {
       const resp = await client.get(serverUrl + paths.resource, { responseType: 'text' })
       expect(resp.status).toBe(200)
-      expect(typeof resp.data).toBe('string')
+      expect(typeof resp.body).toBe('string')
     })
   })
 
@@ -508,7 +508,7 @@ describe('new FetchClient()', () => {
       expect(error).toBeDefined()
       expect(error).toBeInstanceOf(FetchResponseError)
       expect(error.response).toBeDefined()
-      expect(error.response.data).toBeDefined()
+      expect(error.response.body).toBeDefined()
       expect(error.response.status).toBeDefined()
       expect(error.response.statusText).toBeDefined()
     })

@@ -17,9 +17,9 @@ Wrapper for Fetch with error handling and other DX improvements.
 * Default Fetch options for all requests
 * Convert response body using defined response type (avoid calling resp.json())
 * Transform request options and headers before sending
-* Transform response data before returning
+* Transform response body before returning
 
-**Requires Fetch support in Browser or Node (>=18), no polyfill provided.**
+**Requires Fetch support in Browser or Node (>=18), use a polyfill to support other environments.**
 
 ## Sandbox
 
@@ -55,7 +55,7 @@ const client = new FetchClient()
 
 client.get('https://jsonplaceholder.typicode.com/todos/1')
   .then((resp) => {
-    console.log(resp.data)
+    console.log(resp.body)
   })
 ```
 
@@ -90,6 +90,7 @@ client.options('https://jsonplaceholder.typicode.com/todos')
 ### `.patch(url, body, options?)`
 
 When `body` is an object and `Content-Type` is not defined in headers:
+
 * `body` is serialized to JSON
 * `Content-Type: application/json` is added to headers
 
@@ -100,13 +101,14 @@ const client = new FetchClient()
 
 client.patch('https://jsonplaceholder.typicode.com/todos/1', { completed: true })
   .then((resp) => {
-    console.log(resp.data)
+    console.log(resp.body)
   })
 ```
 
 ### `.post(url, body, options?)`
 
 When `body` is an object and `Content-Type` is not defined in headers:
+
 * `body` is serialized to JSON
 * `Content-Type: application/json` is added to headers
 
@@ -117,13 +119,14 @@ const client = new FetchClient()
 
 client.post('https://jsonplaceholder.typicode.com/todos', { title: 'test' })
   .then((resp) => {
-    console.log(resp.data)
+    console.log(resp.body)
   })
 ```
 
 ### `.put(url, body, options?)`
 
 When `body` is an object and `Content-Type` is not defined in headers:
+
 * `body` is serialized to JSON
 * `Content-Type: application/json` is added to headers
 
@@ -134,7 +137,7 @@ const client = new FetchClient()
 
 client.put('https://jsonplaceholder.typicode.com/todos/1', { title: 'test' })
   .then((resp) => {
-    console.log(resp.data)
+    console.log(resp.body)
   })
 ```
 
@@ -151,7 +154,7 @@ client.fetch('https://jsonplaceholder.typicode.com/todos/1', {
   method: 'GET',
 })
   .then((resp) => {
-    console.log(resp.data)
+    console.log(resp.body)
   })
 ```
 
@@ -176,7 +179,7 @@ client.post('https://jsonplaceholder.typicode.com/todos', {})
   })
 ```
 
-## Configuring the client 
+## Configuring the client
 
 ```js
 import { FetchClient } from '@jalik/fetch-client'
@@ -213,8 +216,8 @@ const client = new FetchClient({
   // Transform response Body before returning.
   // Several functions can be passed (all executed sequentially).
   transformResponse: [
-    (data, response) => ({
-      ...data,
+    (body, response) => ({
+      ...body,
       // Add response date to each response
       receivedAt: Date.now(),
     }),

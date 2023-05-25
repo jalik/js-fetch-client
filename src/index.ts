@@ -1,8 +1,8 @@
 export interface FetchClientResponse<T = any> {
   /**
-   * Response data.
+   * Response body.
    */
-  data: T
+  body: T
   /**
    * Response headers.
    */
@@ -64,16 +64,16 @@ export interface FetchClientConfig {
    * Allow transforming a response.
    * @param response
    */
-  transformResponse?: Array<(data: any, response: Response) => any>
+  transformResponse?: Array<(body: any, response: Response) => any>
 }
 
 export class FetchClient {
   private readonly config: FetchClientConfig & {
     headers: Record<string, string>,
     options: RequestInit,
-    responseType: 'arraybuffer' | 'blob' | 'json' | 'text' | undefined
+    responseType: ResponseType
     transformRequest: Array<(url: string, options: RequestInit) => RequestInit>
-    transformResponse: Array<(data: any, response: Response) => any>
+    transformResponse: Array<(body: any, response: Response) => any>
   }
 
   constructor (config?: FetchClientConfig) {
@@ -152,7 +152,7 @@ export class FetchClient {
     }
     return fetch(targetUrl, opts)
       .then(async (response: Response): Promise<FetchClientResponse> => {
-        let data: unknown
+        let body: unknown
         const contentLength = response.headers.get('content-length')
         const contentType = response.headers.get('content-type')
         const responseType = typeof opts.responseType !== 'undefined'
@@ -161,22 +161,22 @@ export class FetchClient {
 
         if (responseType && (contentType || (contentLength && contentLength !== '0')) &&
           opts.method && !['HEAD', 'OPTIONS'].includes(opts.method)) {
-          // Convert data.
+          // Convert body.
           if (responseType === 'json') {
-            data = await response.json()
+            body = await response.json()
           } else if (responseType === 'text') {
-            data = await response.text()
+            body = await response.text()
           } else if (responseType === 'blob') {
-            data = await response.blob()
+            body = await response.blob()
           } else if (responseType === 'arraybuffer') {
-            data = await response.arrayBuffer()
+            body = await response.arrayBuffer()
           }
         }
 
         // Transform response.
         if (response.ok && this.config.transformResponse.length) {
           this.config.transformResponse.forEach((transform) => {
-            data = transform(data, response)
+            body = transform(body, response)
           })
         }
 
@@ -187,7 +187,7 @@ export class FetchClient {
         })
 
         const result = {
-          data,
+          body,
           headers: respHeaders,
           status: response.status,
           statusText: response.statusText
