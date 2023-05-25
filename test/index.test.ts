@@ -363,9 +363,9 @@ describe('new FetchClient(options)', () => {
       })
     })
 
-    describe('with responseType = "arraybuffer"', () => {
+    describe('with responseType = "arrayBuffer"', () => {
       const client = new FetchClient({
-        responseType: 'arraybuffer'
+        responseType: 'arrayBuffer'
       })
 
       it('should return body as ArrayBuffer', async () => {

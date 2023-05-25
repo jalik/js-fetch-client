@@ -26,7 +26,7 @@ export class FetchResponseError extends Error {
   }
 }
 
-export type ResponseType = 'arraybuffer' | 'blob' | 'json' | 'text' | undefined
+export type ResponseType = 'arrayBuffer' | 'blob' | 'json' | 'text' | undefined
 
 export type FetchOptions = RequestInit & {
   /**
@@ -168,7 +168,7 @@ export class FetchClient {
             body = await response.text()
           } else if (responseType === 'blob') {
             body = await response.blob()
-          } else if (responseType === 'arraybuffer') {
+          } else if (responseType === 'arrayBuffer') {
             body = await response.arrayBuffer()
           }
         }
