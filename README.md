@@ -36,11 +36,9 @@ const client = new FetchClient()
 
 ## Executing a request
 
-### `fetch(url, options?)`
-
-This is the generic method called by other methods to execute a request.  
+The method `.fetch(url, options)` is a generic method to execute a request.  
 It's like calling `fetch()` directly, but with all the benefits of using `FetchClient` (error handling, body transformations...).  
-Usually, you would prefer to use a shortcut method like `.get()` and `.post()` instead of `.fetch()`.
+Usually, you would prefer to use a shortcut method (described after) like `.get()` or `.post()` instead of `.fetch()`.
 
 ```js
 import { FetchClient } from '@jalik/fetch-client'
@@ -107,7 +105,7 @@ type FetchClientResponse<T = any> = {
 }
 ```
 
-### `.delete(url, options?)`
+### Executing a DELETE request
 
 ```js
 import { FetchClient } from '@jalik/fetch-client'
@@ -117,7 +115,7 @@ const client = new FetchClient()
 client.delete('https://jsonplaceholder.typicode.com/posts/1')
 ```
 
-### `.get(url, options?)`
+### Executing a GET request
 
 ```js
 import { FetchClient } from '@jalik/fetch-client'
@@ -134,7 +132,7 @@ client.get('https://jsonplaceholder.typicode.com/todos/1', {
   })
 ```
 
-### `.head(url, options?)`
+### Executing a HEAD request
 
 ```js
 import { FetchClient } from '@jalik/fetch-client'
@@ -148,7 +146,7 @@ client.head('https://jsonplaceholder.typicode.com/todos/1')
   })
 ```
 
-### `.options(url, options?)`
+### Executing an OPTIONS request
 
 ```js
 import { FetchClient } from '@jalik/fetch-client'
@@ -162,7 +160,7 @@ client.options('https://jsonplaceholder.typicode.com/todos')
   })
 ```
 
-### `.patch(url, body, options?)`
+### Executing a PATCH request
 
 When `body` is an object and `Content-Type` is not defined in headers:
 
@@ -184,7 +182,7 @@ client.patch(
   })
 ```
 
-### `.post(url, body, options?)`
+### Executing a POST request
 
 When `body` is an object and `Content-Type` is not defined in headers:
 
@@ -206,7 +204,7 @@ client.post(
   })
 ```
 
-### `.put(url, body, options?)`
+### Executing a PUT request
 
 When `body` is an object and `Content-Type` is not defined in headers:
 
@@ -242,6 +240,7 @@ const client = new FetchClient()
 const invalidObject = {}
 
 client.post('https://jsonplaceholder.typicode.com/todos', invalidObject, {
+  // Setting the responseType is important to convert error response body.
   responseType: 'json',
 })
   .catch((error) => {
@@ -260,16 +259,14 @@ client.post('https://jsonplaceholder.typicode.com/todos', invalidObject, {
 import { FetchClient } from '@jalik/fetch-client'
 
 const client = new FetchClient({
-  // Prefix all relative URL with the base URL.
+  // Prefix all relative URL with the base URL (does nothing on absolute URL).
   baseUrl: 'http://localhost',
-  // Set default headers for all requests.
-  // By default, headers are empty.
+  // Set default headers for all requests (empty by default).
   headers: {
     'authorization': '...',
     'x-xsrf-token': '...',
   },
   // Set default Fetch options for all requests.
-  // By default, options are empty.
   options: {
     mode: 'cors',
   },

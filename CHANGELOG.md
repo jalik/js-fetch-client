@@ -1,5 +1,18 @@
 # Changelog
 
+## v2.0.0 (2023-05-25)
+
+- **[BREAKING CHANGE]** Changed default value of `responseType` to `undefined`
+- **[BREAKING CHANGE]** Renamed `response.data` to `response.body`
+- **[BREAKING CHANGE]** Renamed value `arraybuffer` to `arrayBuffer` in `responseType` option
+- **[BREAKING CHANGE]** Do not return Response in `response.body` when `responseType` is `undefined`
+- Added value `formData` to `responseType` option
+- Added value `stream` to `responseType` option
+- Added response as the second argument of `transformResponse` callbacks
+- Added `redirected` to response
+- Added `type` to response
+- Added `original` (containing the original Response) to response
+
 ## v1.0.4 (2023-05-24)
 
 - Fixed response data not being defined when `content-type` is missing in response headers
