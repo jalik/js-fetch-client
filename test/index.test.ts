@@ -13,6 +13,7 @@ server.register(fastifyMultipart)
 const paths = {
   blob: '/blob',
   error: '/error',
+  formData: '/formData',
   headers: '/headers',
   noBody: '/no-body',
   resources: '/resources',
@@ -30,7 +31,13 @@ server.all(paths.noBody, (req, rep) => {
 })
 
 server.get(paths.blob, () => {
-  return 'secret'
+  return Buffer.from('secret')
+})
+
+server.get(paths.formData, (req, rep) => {
+  rep.status(200)
+  rep.header('content-type', 'application/x-www-form-urlencoded')
+  rep.send(`date=${Date.now()}`)
 })
 
 server.get(paths.headers, (req) => {
@@ -386,6 +393,20 @@ describe('new FetchClient(options)', () => {
         expect(resp.status).toBe(200)
         expect(resp.body).toBeDefined()
         expect(resp.body instanceof Blob).toBe(true)
+      })
+    })
+
+    describe('with responseType = "formData"', () => {
+      const client = new FetchClient({
+        responseType: 'formData'
+      })
+
+      it('should return body as FormData', async () => {
+        const resp = await client.get(serverUrl + paths.formData)
+        expect(resp.status).toBe(200)
+        expect(resp.body).toBeDefined()
+        expect(resp.body).toBeInstanceOf(FormData)
+        expect(resp.body.get('date')).toBeDefined()
       })
     })
 
