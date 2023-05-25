@@ -1,4 +1,4 @@
-export interface FetchClientResponse<T = any> {
+export type FetchClientResponse<T = any> = {
   /**
    * Response body.
    */
@@ -8,6 +8,14 @@ export interface FetchClientResponse<T = any> {
    */
   headers: Record<string, string>
   /**
+   * The original Fetch Response.
+   */
+  original: Response
+  /**
+   * Tells if the request has been redirected.
+   */
+  redirected: boolean
+  /**
    * Response status code (ex: 200).
    */
   status: number
@@ -15,6 +23,10 @@ export interface FetchClientResponse<T = any> {
    * Response status text (ex: "OK").
    */
   statusText: string
+  /**
+   * Contains the response type.
+   */
+  type: globalThis.ResponseType
 }
 
 export class FetchResponseError extends Error {
@@ -191,8 +203,11 @@ export class FetchClient {
         const result = {
           body,
           headers: respHeaders,
+          original: response,
+          redirected: response.redirected,
           status: response.status,
-          statusText: response.statusText
+          statusText: response.statusText,
+          type: response.type
         }
 
         // Handle response error.

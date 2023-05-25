@@ -56,6 +56,57 @@ client.fetch('https://jsonplaceholder.typicode.com/todos/1', {
   })
 ```
 
+### Request options
+
+The request options are the same as Fetch options with extra options.
+
+```ts
+type FetchOptions = RequestInit & {
+  /**
+   * The type of response to expect.
+   * Pass undefined to ignore response body.
+   */
+  responseType?: ResponseType
+}
+```
+
+### Response object
+
+The response object returned by all request methods follows the declaration below.
+
+```ts
+type FetchClientResponse<T = any> = {
+  /**
+   * Response body.
+   */
+  body: T
+  /**
+   * Response headers.
+   */
+  headers: Record<string, string>
+  /**
+   * The original Fetch Response.
+   */
+  original: Response
+  /**
+   * Tells if the request has been redirected.
+   */
+  redirected: boolean
+  /**
+   * Response status code (ex: 200).
+   */
+  status: number
+  /**
+   * Response status text (ex: "OK").
+   */
+  statusText: string
+  /**
+   * Contains the response type.
+   */
+  type: globalThis.ResponseType
+}
+```
+
 ### `.delete(url, options?)`
 
 ```js

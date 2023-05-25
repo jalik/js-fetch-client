@@ -125,6 +125,25 @@ describe('new FetchClient(options)', () => {
       }).not.toThrow()
     })
 
+    describe('fetch(url, options)', () => {
+      it('should return a promise', async () => {
+        const promise = client.fetch(serverUrl + paths.resource)
+        expect(promise).toBeDefined()
+        expect(promise.constructor.name).toBe('Promise')
+      })
+
+      it('should return a promise with a response', async () => {
+        const resp = await client.fetch(serverUrl + paths.resource)
+        // expect(resp.body).toBeDefined()
+        expect(resp.headers).toBeDefined()
+        expect(resp.original).toBeInstanceOf(Response)
+        expect(typeof resp.redirected).toBe('boolean')
+        expect(typeof resp.status).toBe('number')
+        expect(typeof resp.statusText).toBe('string')
+        expect(typeof resp.type).toBe('string')
+      })
+    })
+
     describe('delete(url, options)', () => {
       it('should use the DELETE method', async () => {
         const resp = await client.delete(serverUrl + paths.resource)
