@@ -31,6 +31,7 @@ export type ResponseType = 'arraybuffer' | 'blob' | 'json' | 'text' | undefined
 export type FetchOptions = RequestInit & {
   /**
    * The type of response to expect.
+   * Pass undefined to ignore response body.
    */
   responseType?: ResponseType
 }
@@ -50,6 +51,7 @@ export interface FetchClientConfig {
   options?: RequestInit
   /**
    * The type of response to expect.
+   * Pass undefined to ignore response body.
    */
   responseType?: ResponseType
   /**
@@ -157,9 +159,7 @@ export class FetchClient {
           ? opts.responseType
           : this.config.responseType
 
-        if (!responseType) {
-          data = response
-        } else if ((contentType || (contentLength && contentLength !== '0')) &&
+        if (responseType && (contentType || (contentLength && contentLength !== '0')) &&
           opts.method && !['HEAD', 'OPTIONS'].includes(opts.method)) {
           // Convert data.
           if (responseType === 'json') {

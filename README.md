@@ -195,9 +195,8 @@ const client = new FetchClient({
   options: {
     mode: 'cors',
   },
-  // Automatically convert returned Body data to type.
-  // It can be one of "arraybuffer", "blob", "json", "text" or undefined
-  // to get the original Response object.
+  // Enable conversion of Body response.
+  // It can be one of "arraybuffer", "blob", "json", "text" or undefined to ignore response body.
   responseType: 'json',
   // Transform request options and headers before sending.
   // Several functions can be passed (all executed sequentially).

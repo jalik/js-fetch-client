@@ -357,10 +357,10 @@ describe('new FetchClient()', () => {
     describe('with responseType = undefined', () => {
       const client = new FetchClient({ responseType: undefined })
 
-      it('should return a Response', async () => {
+      it('should return response.data = undefined', async () => {
         const resp = await client.get(serverUrl + paths.resource)
         expect(resp.status).toBe(200)
-        expect(resp.data).toBeInstanceOf(Response)
+        expect(resp.data).toBeUndefined()
       })
     })
 
