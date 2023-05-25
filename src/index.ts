@@ -78,7 +78,7 @@ export class FetchClient {
 
   constructor (config?: FetchClientConfig) {
     this.config = {
-      responseType: 'json',
+      responseType: undefined,
       transformRequest: [],
       transformResponse: [],
       ...config,

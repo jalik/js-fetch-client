@@ -36,6 +36,26 @@ const client = new FetchClient()
 
 ## Executing a request
 
+### `fetch(url, options?)`
+
+This is the generic method called by other methods to execute a request.  
+It's like calling `fetch()` directly, but with all the benefits of using `FetchClient` (error handling, body transformations...).  
+Usually, you would prefer to use a shortcut method like `.get()` and `.post()` instead of `.fetch()`.
+
+```js
+import { FetchClient } from '@jalik/fetch-client'
+
+const client = new FetchClient()
+
+client.fetch('https://jsonplaceholder.typicode.com/todos/1', {
+  method: 'GET',
+  responseType: 'json'
+})
+  .then((resp) => {
+    console.log(resp.body)
+  })
+```
+
 ### `.delete(url, options?)`
 
 ```js
@@ -53,7 +73,11 @@ import { FetchClient } from '@jalik/fetch-client'
 
 const client = new FetchClient()
 
-client.get('https://jsonplaceholder.typicode.com/todos/1')
+client.get('https://jsonplaceholder.typicode.com/todos/1', {
+  // Convert response body to JSON.
+  // It can be done per request, or for all requests when passed to FetchClient options.
+  responseType: 'json',
+})
   .then((resp) => {
     console.log(resp.body)
   })
@@ -99,7 +123,11 @@ import { FetchClient } from '@jalik/fetch-client'
 
 const client = new FetchClient()
 
-client.patch('https://jsonplaceholder.typicode.com/todos/1', { completed: true })
+client.patch(
+  'https://jsonplaceholder.typicode.com/todos/1',
+  { completed: true },
+  { responseType: 'json' }
+)
   .then((resp) => {
     console.log(resp.body)
   })
@@ -117,7 +145,11 @@ import { FetchClient } from '@jalik/fetch-client'
 
 const client = new FetchClient()
 
-client.post('https://jsonplaceholder.typicode.com/todos', { title: 'test' })
+client.post(
+  'https://jsonplaceholder.typicode.com/todos',
+  { title: 'test' },
+  { responseType: 'json' }
+)
   .then((resp) => {
     console.log(resp.body)
   })
@@ -135,24 +167,11 @@ import { FetchClient } from '@jalik/fetch-client'
 
 const client = new FetchClient()
 
-client.put('https://jsonplaceholder.typicode.com/todos/1', { title: 'test' })
-  .then((resp) => {
-    console.log(resp.body)
-  })
-```
-
-### `fetch(url, options?)`
-
-This is the "low-level" method called by other methods to execute a request.
-
-```js
-import { FetchClient } from '@jalik/fetch-client'
-
-const client = new FetchClient()
-
-client.fetch('https://jsonplaceholder.typicode.com/todos/1', {
-  method: 'GET',
-})
+client.put(
+  'https://jsonplaceholder.typicode.com/todos/1',
+  { title: 'test' },
+  { responseType: 'json' }
+)
   .then((resp) => {
     console.log(resp.body)
   })
@@ -161,20 +180,25 @@ client.fetch('https://jsonplaceholder.typicode.com/todos/1', {
 ## Handling errors
 
 When the server returns an error code (4xx, 5xx...), the client throws an error.  
-You can access the server's response with `error.response`.
+If the server returned a body (containing error details), it can be found in `error.response.body`.  
+However the body is available only when `responseType` is defined in `FetchClient` options or in request options.
 
 ```js
 import { FetchClient } from '@jalik/fetch-client'
 
 const client = new FetchClient()
 
-client.post('https://jsonplaceholder.typicode.com/todos', {})
+const invalidObject = {}
+
+client.post('https://jsonplaceholder.typicode.com/todos', invalidObject, {
+  responseType: 'json',
+})
   .catch((error) => {
     console.error(
       // the status error
       error.message,
       // the server response
-      error.response
+      error.response.body
     )
   })
 ```
@@ -198,8 +222,9 @@ const client = new FetchClient({
   options: {
     mode: 'cors',
   },
-  // Enable conversion of Body response.
-  // It can be one of "arraybuffer", "blob", "json", "text" or undefined to ignore response body.
+  // Enable conversion of body response.
+  // It can be one of "arraybuffer", "blob", "json", "text"
+  // Use undefined to ignore response body.
   responseType: 'json',
   // Transform request options and headers before sending.
   // Several functions can be passed (all executed sequentially).

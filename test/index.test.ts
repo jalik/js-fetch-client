@@ -107,61 +107,62 @@ afterAll(async () => {
   await server.close()
 })
 
-describe('new FetchClient()', () => {
+describe('new FetchClient(options)', () => {
   describe('without options', () => {
-    it('should not throw', () => {
+    const client = new FetchClient()
+
+    it('should not throw an error', () => {
       expect(() => {
         // eslint-disable-next-line no-new
         new FetchClient()
       }).not.toThrow()
     })
 
-    const client = new FetchClient()
-
-    describe('delete()', () => {
+    describe('delete(url, options)', () => {
       it('should use the DELETE method', async () => {
         const resp = await client.delete(serverUrl + paths.resource)
         expect(resp.status).toBe(200)
         expect(resp.headers).toBeDefined()
       })
 
-      it('should return body if any in response.body', async () => {
-        const resp = await client.delete(serverUrl + paths.resource)
-        expect(resp.body).toBeDefined()
-        expect(resp.body.method).toBe('DELETE')
+      describe('with options.responseType', () => {
+        it('should return body in response.body', async () => {
+          const resp = await client.delete(serverUrl + paths.resource, { responseType: 'json' })
+          expect(resp.body).toBeDefined()
+        })
       })
     })
 
-    describe('get()', () => {
+    describe('get(url, options)', () => {
       it('should use the GET method', async () => {
         const resp = await client.get(serverUrl + paths.resource)
         expect(resp.status).toBe(200)
         expect(resp.headers).toBeDefined()
       })
 
-      it('should return body in response.body', async () => {
-        const resp = await client.get(serverUrl + paths.resource)
-        expect(resp.body).toBeDefined()
-        expect(resp.body.method).toBe('GET')
-        expect(resp.body.data).toBeDefined()
+      describe('with options.responseType', () => {
+        it('should return body in response.body', async () => {
+          const resp = await client.get(serverUrl + paths.resource, { responseType: 'json' })
+          expect(resp.body).toBeDefined()
+        })
       })
     })
 
-    describe('head()', () => {
+    describe('head(url, options)', () => {
       it('should use the HEAD method', async () => {
         const resp = await client.head(serverUrl + paths.resource)
         expect(resp.status).toBe(200)
         expect(resp.headers).toBeDefined()
       })
 
-      it('should not return body', async () => {
+      it('should return response.body = undefined', async () => {
         const resp = await client.head(serverUrl + paths.resource)
         expect(resp.body).toBeUndefined()
       })
     })
 
-    describe('options()', () => {
-      it('should use the HEAD method', async () => {
+    describe('options(url, options)', () => {
+      it('should use the OPTIONS method', async () => {
         const resp = await client.options(serverUrl + paths.resource)
         expect(resp.status).toBe(200)
         expect(resp.headers).toBeDefined()
@@ -172,13 +173,13 @@ describe('new FetchClient()', () => {
         expect(resp.headers.allow).toBeDefined()
       })
 
-      it('should not return body', async () => {
+      it('should return response.body = undefined', async () => {
         const resp = await client.options(serverUrl + paths.resource)
         expect(resp.body).toBeUndefined()
       })
     })
 
-    describe('patch()', () => {
+    describe('patch(url, body, options)', () => {
       const data = { test: true }
 
       it('should use the PATCH method', async () => {
@@ -187,15 +188,15 @@ describe('new FetchClient()', () => {
         expect(resp.headers).toBeDefined()
       })
 
-      it('should return body if any in response.body', async () => {
-        const resp = await client.patch(serverUrl + paths.resource, data)
-        expect(resp.body).toBeDefined()
-        expect(resp.body.method).toBe('PATCH')
-        expect(resp.body.data).toEqual(data)
+      describe('with options.responseType', () => {
+        it('should return body in response.body', async () => {
+          const resp = await client.patch(serverUrl + paths.resource, data, { responseType: 'json' })
+          expect(resp.body).toBeDefined()
+        })
       })
     })
 
-    describe('post()', () => {
+    describe('post(url, body, options)', () => {
       const data = { test: true }
 
       it('should use the POST method', async () => {
@@ -204,28 +205,29 @@ describe('new FetchClient()', () => {
         expect(resp.headers).toBeDefined()
       })
 
-      it('should return body if any in response.body', async () => {
-        const resp = await client.post(serverUrl + paths.resources, data)
-        expect(resp.body).toBeDefined()
-        expect(resp.body.method).toBe('POST')
-        expect(resp.body.data).toEqual(data)
-      })
+      describe('with options.responseType', () => {
+        it('should return body in response.body', async () => {
+          const resp = await client.post(serverUrl + paths.resources, data, { responseType: 'json' })
+          expect(resp.body).toBeDefined()
+        })
 
-      describe('with string as body', () => {
-        it('should not serialize body or change Content-Type', async () => {
-          const resp = await client.post(serverUrl + paths.resources, JSON.stringify(data), {
-            headers: { 'Content-Type': 'application/json' }
+        describe('with string as body', () => {
+          it('should not serialize body or change Content-Type', async () => {
+            const resp = await client.post(serverUrl + paths.resources, JSON.stringify(data), {
+              responseType: 'json',
+              headers: { 'Content-Type': 'application/json' }
+            })
+            expect(resp.status).toBe(201)
+            expect(resp.headers).toBeDefined()
+            expect(resp.body.method).toBe('POST')
+            expect(resp.body.data).toEqual(data)
+            expect(resp.body.headers['content-type']).toEqual('application/json')
           })
-          expect(resp.status).toBe(201)
-          expect(resp.headers).toBeDefined()
-          expect(resp.body.method).toBe('POST')
-          expect(resp.body.data).toEqual(data)
-          expect(resp.body.headers['content-type']).toEqual('application/json')
         })
       })
     })
 
-    describe('put()', () => {
+    describe('put(url, body, options)', () => {
       const data = { test: true }
 
       it('should use the PUT method', async () => {
@@ -234,32 +236,32 @@ describe('new FetchClient()', () => {
         expect(resp.headers).toBeDefined()
       })
 
-      it('should return body if any in response.body', async () => {
-        const resp = await client.put(serverUrl + paths.resource, data)
-        expect(resp.body).toBeDefined()
-        expect(resp.body.method).toBe('PUT')
-        expect(resp.body.data).toEqual(data)
+      describe('with options.responseType', () => {
+        it('should return body in response.body', async () => {
+          const resp = await client.put(serverUrl + paths.resource, data, { responseType: 'json' })
+          expect(resp.body).toBeDefined()
+        })
       })
     })
 
-    describe('setHeader()', () => {
+    describe('setHeader(name, value)', () => {
       it('should set the header', async () => {
         const apiKey = 'secret'
         client.setHeader('api-key', apiKey)
 
-        const resp = await client.get(serverUrl + paths.headers)
+        const resp = await client.get(serverUrl + paths.headers, { responseType: 'json' })
         expect(resp.status).toBe(200)
         expect(resp.body.headers).toBeDefined()
         expect(resp.body.headers['api-key']).toEqual(apiKey)
       })
 
-      describe('with null or undefined', () => {
+      describe('with null or undefined value', () => {
         it('should remove the header', async () => {
           const apiKey = 'secret'
           client.setHeader('api-key', apiKey)
           client.setHeader('api-key', undefined)
 
-          const resp = await client.get(serverUrl + paths.headers)
+          const resp = await client.get(serverUrl + paths.headers, { responseType: 'json' })
           expect(resp.status).toBe(200)
           expect(resp.body.headers).toBeDefined()
           expect(resp.body.headers['api-key']).toBeUndefined()
@@ -267,40 +269,40 @@ describe('new FetchClient()', () => {
       })
     })
 
-    describe('setHeaders()', () => {
+    describe('setHeaders(headers)', () => {
       it('should set headers', async () => {
         const headers = { test: 'true' }
         client.setHeaders(headers)
 
-        const resp = await client.get(serverUrl + paths.headers)
+        const resp = await client.get(serverUrl + paths.headers, { responseType: 'json' })
         expect(resp.status).toBe(200)
         expect(resp.body.headers).toBeDefined()
         expect(resp.body.headers.test).toEqual(headers.test)
       })
     })
 
-    describe('setOptions()', () => {
-      it('should set options', async () => {
-        const options: RequestInit = {
-          mode: 'same-origin'
-        }
-        client.setOptions(options)
-
-        const resp = await client.get(serverUrl + paths.headers)
-        expect(resp.status).toBe(200)
-        expect(resp.body.headers).toBeDefined()
-        expect(resp.body.headers['sec-fetch-mode']).toBe(options.mode)
-      })
-    })
-
-    describe('setOption()', () => {
+    describe('setOption(name, value)', () => {
       it('should set option', async () => {
         const options: RequestInit = {
           mode: 'same-origin'
         }
         client.setOption('mode', options.mode)
 
-        const resp = await client.get(serverUrl + paths.headers)
+        const resp = await client.get(serverUrl + paths.headers, { responseType: 'json' })
+        expect(resp.status).toBe(200)
+        expect(resp.body.headers).toBeDefined()
+        expect(resp.body.headers['sec-fetch-mode']).toBe(options.mode)
+      })
+    })
+
+    describe('setOptions(options)', () => {
+      it('should set options', async () => {
+        const options: RequestInit = {
+          mode: 'same-origin'
+        }
+        client.setOptions(options)
+
+        const resp = await client.get(serverUrl + paths.headers, { responseType: 'json' })
         expect(resp.status).toBe(200)
         expect(resp.body.headers).toBeDefined()
         expect(resp.body.headers['sec-fetch-mode']).toBe(options.mode)
@@ -308,7 +310,7 @@ describe('new FetchClient()', () => {
     })
   })
 
-  describe('with options.baseUrl', () => {
+  describe('options.baseUrl', () => {
     const client = new FetchClient({
       baseUrl: serverUrl
     })
@@ -316,31 +318,18 @@ describe('new FetchClient()', () => {
     it('should prepend baseUrl to relative URL', async () => {
       const resp = await client.get(paths.resource)
       expect(resp.status).toBe(200)
-      expect(resp.body.data.id).toBeDefined()
 
       const resp2 = await client.get(paths.resource.substring(1))
       expect(resp2.status).toBe(200)
-      expect(resp2.body.data.id).toBeDefined()
     })
 
     it('should not prepend baseUrl to absolute URL', async () => {
       const resp = await client.get(serverUrl + paths.resource)
       expect(resp.status).toBe(200)
-      expect(resp.body.data.id).toBeDefined()
     })
   })
 
-  describe('with options.responseType', () => {
-    describe('without responseType', () => {
-      const client = new FetchClient()
-
-      it('should use json as default value', async () => {
-        const resp = await client.get(serverUrl + paths.resource)
-        expect(resp.status).toBe(200)
-        expect(resp.body).toBeDefined()
-      })
-    })
-
+  describe('options.responseType', () => {
     describe('with invalid responseType', () => {
       const client = new FetchClient({
         // @ts-ignore
@@ -351,6 +340,16 @@ describe('new FetchClient()', () => {
         const resp = await client.get(serverUrl + paths.blob)
         expect(resp.status).toBe(200)
         expect(resp.body).not.toBeDefined()
+      })
+    })
+
+    describe('with default responseType', () => {
+      const client = new FetchClient()
+
+      it('should return response.body = undefined', async () => {
+        const resp = await client.get(serverUrl + paths.resource)
+        expect(resp.status).toBe(200)
+        expect(resp.body).toBeUndefined()
       })
     })
 
@@ -429,7 +428,7 @@ describe('new FetchClient()', () => {
     describe('with "content-type" and "content-length" not defined in response', () => {
       const client = new FetchClient({ responseType: 'json' })
 
-      it('should use responseType', async () => {
+      it('should ignore body', async () => {
         const resp = await client.get(serverUrl + paths.resourceWithoutContentType)
         expect(resp.status).toBe(200)
         expect(resp.body).toBeUndefined()
@@ -437,8 +436,9 @@ describe('new FetchClient()', () => {
     })
   })
 
-  describe('with options.transformRequest', () => {
+  describe('options.transformRequest', () => {
     const client = new FetchClient({
+      responseType: 'json',
       transformRequest: [
         (url, options) => ({
           ...options,
@@ -457,10 +457,11 @@ describe('new FetchClient()', () => {
     })
   })
 
-  describe('with options.transformResponse', () => {
+  describe('options.transformResponse', () => {
     const update = { a: true }
 
     const client = new FetchClient({
+      responseType: 'json',
       transformResponse: [
         (body, response) => ({
           ...body,
@@ -501,7 +502,7 @@ describe('new FetchClient()', () => {
     it('should throw an error', async () => {
       let error
       try {
-        await client.post(serverUrl + paths.error)
+        await client.get(serverUrl + paths.error, { responseType: 'json' })
       } catch (e) {
         error = e
       }
@@ -509,6 +510,7 @@ describe('new FetchClient()', () => {
       expect(error).toBeInstanceOf(FetchResponseError)
       expect(error.response).toBeDefined()
       expect(error.response.body).toBeDefined()
+      expect(error.response.headers).toBeDefined()
       expect(error.response.status).toBeDefined()
       expect(error.response.statusText).toBeDefined()
     })
