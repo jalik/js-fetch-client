@@ -5,7 +5,7 @@
 ![Last commit](https://img.shields.io/github/last-commit/jalik/js-fetch-client.svg)
 [![GitHub issues](https://img.shields.io/github/issues/jalik/js-fetch-client.svg)](https://github.com/jalik/js-fetch-client/issues)
 ![GitHub](https://img.shields.io/github/license/jalik/js-fetch-client.svg)
-![npm](https://img.shields.io/npm/dt/@jalik/js-fetch-client.svg)
+![npm](https://img.shields.io/npm/dt/@jalik/fetch-client.svg)
 
 Wrapper for Fetch with error handling and other DX improvements.
 
