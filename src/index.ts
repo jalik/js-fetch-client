@@ -127,7 +127,7 @@ export class FetchClient {
    * @param url
    * @param options
    */
-  fetch (url: string, options?: FetchOptions): Promise<FetchClientResponse> {
+  async fetch (url: string, options?: FetchOptions): Promise<FetchClientResponse> {
     // Merge headers.
     const headers = new Headers({
       ...this.config.options.headers,
@@ -169,62 +169,62 @@ export class FetchClient {
         opts = { ...opts, ...transform(targetUrl, opts) }
       })
     }
-    return fetch(targetUrl, opts)
-      .then(async (response: Response): Promise<FetchClientResponse> => {
-        let body: unknown
-        const contentLength = response.headers.get('content-length')
-        const contentType = response.headers.get('content-type')
-        const responseType = typeof opts.responseType !== 'undefined'
-          ? opts.responseType
-          : this.config.responseType
 
-        if (responseType && (contentType || (contentLength && contentLength !== '0')) &&
-          opts.method && !['HEAD', 'OPTIONS'].includes(opts.method)) {
-          // Convert body.
-          if (responseType === 'json') {
-            body = await response.json()
-          } else if (responseType === 'text') {
-            body = await response.text()
-          } else if (responseType === 'blob') {
-            body = await response.blob()
-          } else if (responseType === 'arrayBuffer') {
-            body = await response.arrayBuffer()
-          } else if (responseType === 'formData') {
-            body = await response.formData()
-          } else if (responseType === 'stream') {
-            body = await response.body
-          }
-        }
+    const response = await fetch(targetUrl, opts)
+    let body: unknown
+    const contentLength = response.headers.get('content-length')
+    const contentType = response.headers.get('content-type')
+    const responseType = typeof opts.responseType !== 'undefined'
+      ? opts.responseType
+      : this.config.responseType
 
-        // Transform response.
-        if (response.ok && this.config.transformResponse.length) {
-          this.config.transformResponse.forEach((transform) => {
-            body = transform(body, response)
-          })
-        }
+    if (responseType && (contentType || (contentLength && contentLength !== '0')) &&
+      opts.method && !['HEAD', 'OPTIONS'].includes(opts.method)) {
+      // Convert body.
+      if (responseType === 'json') {
+        body = await response.json()
+      } else if (responseType === 'text') {
+        body = await response.text()
+      } else if (responseType === 'blob') {
+        body = await response.blob()
+      } else if (responseType === 'arrayBuffer') {
+        body = await response.arrayBuffer()
+      } else if (responseType === 'formData') {
+        body = await response.formData()
+      } else if (responseType === 'stream') {
+        body = response.body
+      }
+    }
 
-        // Collect response headers.
-        const respHeaders: Record<string, string> = {}
-        response.headers.forEach((value, key) => {
-          respHeaders[key] = value
-        })
-
-        const result = {
-          body,
-          headers: respHeaders,
-          original: response,
-          redirected: response.redirected,
-          status: response.status,
-          statusText: response.statusText,
-          type: response.type
-        }
-
-        // Handle response error.
-        if (!response.ok) {
-          throw new FetchResponseError(response.statusText, result)
-        }
-        return result
+    // Transform response.
+    if (response.ok && this.config.transformResponse.length) {
+      this.config.transformResponse.forEach((transform) => {
+        body = transform(body, response)
       })
+    }
+
+    // Collect response headers.
+    const respHeaders: Record<string, string> = {}
+    response.headers.forEach((value, key) => {
+      respHeaders[key] = value
+    })
+
+    const resp = {
+      body,
+      headers: respHeaders,
+      original: response,
+      redirected: response.redirected,
+      status: response.status,
+      statusText: response.statusText,
+      type: response.type
+    }
+
+    // Handle response error.
+    if (!response.ok) {
+      throw new FetchResponseError(response.statusText, resp)
+    }
+
+    return resp
   }
 
   /**
