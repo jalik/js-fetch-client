@@ -489,6 +489,40 @@ describe('new FetchClient(options)', () => {
     })
   })
 
+  describe('options.beforeEach', () => {
+    const client = new FetchClient({
+      responseType: 'json',
+      beforeEach: async (url, options) => ({
+        ...options,
+        headers: { 'original-url': url }
+      })
+    })
+
+    it('should be called before each request', async () => {
+      const resp = await client.get(serverUrl + paths.headers)
+      expect(resp.status).toBe(200)
+      expect(resp.body.headers).toBeDefined()
+      expect(resp.body.headers['original-url']).toBe(serverUrl + paths.headers)
+    })
+  })
+
+  describe('options.afterEach', () => {
+    const client = new FetchClient({
+      responseType: 'json',
+      afterEach: async (url, resp) => ({
+        ...resp,
+        headers: { 'original-url': url }
+      })
+    })
+
+    it('should be called after each request', async () => {
+      const resp = await client.get(serverUrl + paths.resource)
+      expect(resp.status).toBe(200)
+      expect(resp.headers).toBeDefined()
+      expect(resp.headers['original-url']).toBe(serverUrl + paths.resource)
+    })
+  })
+
   describe('options.transformRequest', () => {
     const client = new FetchClient({
       responseType: 'json',
@@ -553,11 +587,13 @@ describe('new FetchClient(options)', () => {
     const client = new FetchClient()
 
     it('should throw an error', async () => {
-      let error
+      let error: any
       try {
         await client.get(serverUrl + paths.error, { responseType: 'json' })
       } catch (e) {
-        error = e
+        if (e instanceof FetchResponseError) {
+          error = e
+        }
       }
       expect(error).toBeDefined()
       expect(error).toBeInstanceOf(FetchResponseError)

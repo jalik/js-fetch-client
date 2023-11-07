@@ -259,8 +259,16 @@ client.post('https://jsonplaceholder.typicode.com/todos', invalidObject, {
 import { FetchClient } from '@jalik/fetch-client'
 
 const client = new FetchClient({
+  // Do something async after each successful request (200 >= code < 400).
+  afterEach: async (url, resp) => {
+    return resp
+  },
   // Prefix all relative URL with the base URL (does nothing on absolute URL).
   baseUrl: 'http://localhost',
+  // Do something async before each request.
+  beforeEach: async (url, options) => {
+    return options
+  },
   // Set default headers for all requests (empty by default).
   headers: {
     'authorization': '...',
@@ -271,8 +279,8 @@ const client = new FetchClient({
     mode: 'cors',
   },
   // Enable conversion of body response.
-  // It can be one of "arrayBuffer", "blob", "formData", "json", "stream", "text"
-  // Use undefined to ignore response body.
+  // Use one of "arrayBuffer", "blob", "formData", "json", "stream", "text", or
+  // undefined to ignore response body.
   responseType: 'json',
   // Transform request options and headers before sending.
   // Several functions can be passed (all executed sequentially).

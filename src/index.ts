@@ -57,9 +57,19 @@ export type FetchOptions = RequestInit & {
 
 export interface FetchClientConfig {
   /**
+   * Function called before each request.
+   * @param options
+   */
+  afterEach?: (url: string, response: FetchClientResponse) => Promise<FetchClientResponse>,
+  /**
    * The base URL to use when executing a relative request.
    */
   baseUrl?: string
+  /**
+   * Function called before each request.
+   * @param options
+   */
+  beforeEach?: (url: string, options: RequestInit) => Promise<RequestInit>,
   /**
    * Client headers.
    */
@@ -170,6 +180,11 @@ export class FetchClient {
       })
     }
 
+    // Execute async code before request.
+    if (this.config.beforeEach) {
+      opts = await this.config.beforeEach(url, opts)
+    }
+
     const response = await fetch(targetUrl, opts)
     let body: unknown
     const contentLength = response.headers.get('content-length')
@@ -209,7 +224,7 @@ export class FetchClient {
       respHeaders[key] = value
     })
 
-    const resp = {
+    let resp = {
       body,
       headers: respHeaders,
       original: response,
@@ -224,6 +239,10 @@ export class FetchClient {
       throw new FetchResponseError(response.statusText, resp)
     }
 
+    // Execute async code after request.
+    if (this.config.afterEach) {
+      resp = await this.config.afterEach(url, resp)
+    }
     return resp
   }
 
