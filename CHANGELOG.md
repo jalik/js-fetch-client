@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.1.0 (2023-11-06)
+
+- Added `afterEach(url, response)` and `beforeEach(url, options)` to client options
+
 ## v2.0.0 (2023-05-25)
 
 - **[BREAKING CHANGE]** Changed default value of `responseType` to `undefined`
