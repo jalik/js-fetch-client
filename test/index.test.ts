@@ -1,105 +1,9 @@
-import { afterAll, beforeAll, describe, expect, it } from '@jest/globals'
-import { fastify } from 'fastify'
-import { FetchClient, FetchResponseError } from '../src'
-import { fastifyMultipart } from '@fastify/multipart'
-
-// Prepare server API
+import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals'
+import { FetchClient, FetchClientResponse, FetchResponseError } from '../src'
+import server, { paths } from './server'
 
 const port = 8888
 const serverUrl = `http://localhost:${port}`
-const server = fastify()
-server.register(fastifyMultipart)
-
-const paths = {
-  blob: '/blob',
-  error: '/error',
-  formData: '/formData',
-  headers: '/headers',
-  noBody: '/no-body',
-  resources: '/resources',
-  resource: '/resources/1',
-  resourceWithoutContentType: '/resourceWithoutContentType'
-}
-
-server.all(paths.error, (req, rep) => {
-  rep.status(400)
-    .send({ error: 'Bad Request' })
-})
-
-server.all(paths.noBody, (req, rep) => {
-  rep.status(204).send()
-})
-
-server.get(paths.blob, () => {
-  return Buffer.from('secret')
-})
-
-server.get(paths.formData, (req, rep) => {
-  rep.status(200)
-  rep.header('content-type', 'application/x-www-form-urlencoded')
-  rep.send(`date=${Date.now()}`)
-})
-
-server.get(paths.headers, (req) => {
-  return { headers: req.headers }
-})
-
-server.options(paths.resource, (req, rep) => {
-  rep.status(200)
-    .header('Allow', 'GET, PATCH, POST, PUT, DELETE, HEAD, OPTIONS')
-    .send()
-})
-
-server.delete(paths.resource, (req) => {
-  return {
-    headers: req.headers,
-    method: req.method
-  }
-})
-
-server.get(paths.resource, (req) => {
-  return {
-    headers: req.headers,
-    method: req.method,
-    data: { id: 1 }
-  }
-})
-
-server.get(paths.resourceWithoutContentType, (req, rep) => {
-  rep.raw.write(JSON.stringify({
-    headers: req.headers,
-    method: req.method,
-    data: { id: 1 }
-  }))
-  rep.raw.end()
-})
-
-server.patch(paths.resource, (req) => {
-  const { body } = req
-  return {
-    headers: req.headers,
-    method: req.method,
-    data: body
-  }
-})
-
-server.post(paths.resources, (req, rep) => {
-  const { body } = req
-  rep.status(201).send({
-    headers: req.headers,
-    method: req.method,
-    data: body
-  })
-})
-
-server.put(paths.resource, (req) => {
-  const { body } = req
-  return {
-    headers: req.headers,
-    method: req.method,
-    data: body
-  }
-})
 
 // Handle server lifecycle
 
@@ -523,6 +427,36 @@ describe('new FetchClient(options)', () => {
     })
   })
 
+  describe('options.transformError', () => {
+    const callback = jest.fn((error: FetchResponseError, response: FetchClientResponse) => {
+      if (error.response.body?.error) {
+        return new FetchResponseError(error.response.body.error, response)
+      }
+      return error
+    })
+    const client = new FetchClient({
+      responseType: 'json',
+      transformError: callback
+    })
+
+    it('should transform response error', async () => {
+      let error: FetchResponseError | undefined
+      const message = 'Custom Error'
+      try {
+        await client.get(serverUrl + paths.error + `?error=${message}`)
+      } catch (e) {
+        if (e instanceof FetchResponseError) {
+          error = e
+        }
+      }
+      expect(callback).toHaveBeenCalled()
+      expect(error).toBeDefined()
+      expect(error).toBeInstanceOf(FetchResponseError)
+      expect(error?.response).toBeDefined()
+      expect(error?.message).toBe(error?.response.body.error)
+    })
+  })
+
   describe('options.transformRequest', () => {
     const client = new FetchClient({
       responseType: 'json',
@@ -584,12 +518,12 @@ describe('new FetchClient(options)', () => {
   })
 
   describe('with server error', () => {
-    const client = new FetchClient()
+    const client = new FetchClient({ responseType: 'json' })
 
     it('should throw an error', async () => {
-      let error: any
+      let error: FetchResponseError | undefined
       try {
-        await client.get(serverUrl + paths.error, { responseType: 'json' })
+        await client.get(serverUrl + paths.error)
       } catch (e) {
         if (e instanceof FetchResponseError) {
           error = e
@@ -597,11 +531,11 @@ describe('new FetchClient(options)', () => {
       }
       expect(error).toBeDefined()
       expect(error).toBeInstanceOf(FetchResponseError)
-      expect(error.response).toBeDefined()
-      expect(error.response.body).toBeDefined()
-      expect(error.response.headers).toBeDefined()
-      expect(error.response.status).toBeDefined()
-      expect(error.response.statusText).toBeDefined()
+      expect(error?.response).toBeDefined()
+      expect(error?.response.body).toBeDefined()
+      expect(error?.response.headers).toBeDefined()
+      expect(error?.response.status).toBeDefined()
+      expect(error?.response.statusText).toBeDefined()
     })
   })
 })

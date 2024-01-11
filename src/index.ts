@@ -30,9 +30,9 @@ export type FetchClientResponse<T = any> = {
 }
 
 export class FetchResponseError extends Error {
-  public response?: FetchClientResponse
+  public response: FetchClientResponse
 
-  constructor (message: string, response?: FetchClientResponse) {
+  constructor (message: string, response: FetchClientResponse) {
     super(message)
     this.response = response
   }
@@ -57,7 +57,7 @@ export type FetchOptions = RequestInit & {
 
 export interface FetchClientConfig {
   /**
-   * Function called before each request.
+   * Function called after each request.
    * @param options
    */
   afterEach?: (url: string, response: FetchClientResponse) => Promise<FetchClientResponse>,
@@ -83,6 +83,12 @@ export interface FetchClientConfig {
    * Pass undefined to ignore response body.
    */
   responseType?: ResponseType
+  /**
+   * Allow transforming the response error.
+   * @param error
+   * @param response
+   */
+  transformError?: (error: FetchResponseError, response: FetchClientResponse) => FetchResponseError,
   /**
    * Allow transforming a request.
    * @param url
@@ -224,7 +230,7 @@ export class FetchClient {
       respHeaders[key] = value
     })
 
-    let resp = {
+    let resp: FetchClientResponse = {
       body,
       headers: respHeaders,
       original: response,
@@ -236,7 +242,13 @@ export class FetchClient {
 
     // Handle response error.
     if (!response.ok) {
-      throw new FetchResponseError(response.statusText, resp)
+      let error = new FetchResponseError(response.statusText, resp)
+
+      // Transform the error.
+      if (this.config.transformError) {
+        error = this.config.transformError(error, resp)
+      }
+      throw error
     }
 
     // Execute async code after request.
