@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.2.0 (2024-01-11)
+
+- Added `transformError(error, response)` to client options
+
 ## v2.1.0 (2023-11-06)
 
 - Added `afterEach(url, response)` and `beforeEach(url, options)` to client options

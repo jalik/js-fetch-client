@@ -7,17 +7,17 @@
 ![GitHub](https://img.shields.io/github/license/jalik/js-fetch-client.svg)
 ![npm](https://img.shields.io/npm/dt/@jalik/fetch-client.svg)
 
-Wrapper for Fetch with error handling and other DX improvements.
+HTTP client based on Fetch API with error handling and other DX improvements.
 
 ## Features
 
-* Shortcut methods for DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT
-* Base URL declaration for all requests
-* Default headers for all requests
-* Default Fetch options for all requests
-* Convert response body using defined response type (avoid calling resp.json())
+* Based on Fetch API (RequestInit + Response), with extra options
+* Shortcut methods (DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT)
+* Global configuration for all requests (headers, options and base URL)
+* Conversion of response body using a type (json, blob, text, arrayBuffer...)
 * Transform request options and headers before sending
-* Transform response body before returning
+* Transform response body before return
+* Transform response error before return
 
 **Requires Fetch support in Browser or Node (>=18), use a polyfill to support other environments.**
 
@@ -230,7 +230,7 @@ client.put(
 
 When the server returns an error code (4xx, 5xx...), the client throws an error.  
 If the server returned a body (containing error details), it can be found in `error.response.body`.  
-However the body is available only when `responseType` is defined in `FetchClient` options or in request options.
+However be aware that the body is only available when `responseType` is defined in `FetchClient` options or in request options.
 
 ```js
 import { FetchClient } from '@jalik/fetch-client'
@@ -243,13 +243,39 @@ client.post('https://jsonplaceholder.typicode.com/todos', invalidObject, {
   // Setting the responseType is important to convert error response body.
   responseType: 'json',
 })
-  .catch((error) => {
+  .catch((error: FetchResponseError) => {
     console.error(
       // the status error
       error.message,
       // the server response
       error.response.body
     )
+  })
+```
+
+By default, the error contains a basic message (status text like "Bad Request").
+You can use the error returned by the server like below (this will be applied to all client responses).
+
+```js
+import { FetchClient } from '@jalik/fetch-client'
+
+const client = new FetchClient({
+  transformError: (error: FetchResponseError, response: FetchClientResponse) => {
+    // Return custom server error.
+    if (error.response.body?.message) {
+      return new FetchResponseError(error.response.body.message, response)
+    }
+    return error
+  },
+})
+
+client.post('https://jsonplaceholder.typicode.com/todos', invalidObject, {
+  // Setting the responseType is important to convert error response body.
+  responseType: 'json',
+})
+  .catch((error: FetchResponseError) => {
+    // the error message has the same value as "error.response.body.error"
+    console.error(error.message)
   })
 ```
 
@@ -282,6 +308,14 @@ const client = new FetchClient({
   // Use one of "arrayBuffer", "blob", "formData", "json", "stream", "text", or
   // undefined to ignore response body.
   responseType: 'json',
+  // Transform response error before returning.
+  transformError: (error: FetchResponseError, response: FetchClientResponse) => {
+    // Return custom server error.
+    if (error.response.body?.message) {
+      return new FetchResponseError(error.response.body.message, response)
+    }
+    return error
+  },
   // Transform request options and headers before sending.
   // Several functions can be passed (all executed sequentially).
   transformRequest: [
