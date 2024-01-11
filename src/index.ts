@@ -55,7 +55,7 @@ export type FetchOptions = RequestInit & {
   responseType?: ResponseType
 }
 
-export interface FetchClientConfig {
+export type FetchClientConfig = {
   /**
    * Function called after each request.
    * @param options
@@ -73,11 +73,11 @@ export interface FetchClientConfig {
   /**
    * Client headers.
    */
-  headers?: Record<string, string>
+  headers: Record<string, string>
   /**
    * Fetch options.
    */
-  options?: RequestInit
+  options: RequestInit
   /**
    * The type of response to expect.
    * Pass undefined to ignore response body.
@@ -94,24 +94,18 @@ export interface FetchClientConfig {
    * @param url
    * @param options
    */
-  transformRequest?: Array<(url: string, options: RequestInit) => RequestInit>
+  transformRequest: Array<(url: string, options: RequestInit) => RequestInit>
   /**
    * Allow transforming a response.
    * @param response
    */
-  transformResponse?: Array<(body: any, response: Response) => any>
+  transformResponse: Array<(body: any, response: Response) => any>
 }
 
 export class FetchClient {
-  private readonly config: FetchClientConfig & {
-    headers: Record<string, string>,
-    options: RequestInit,
-    responseType: ResponseType
-    transformRequest: Array<(url: string, options: RequestInit) => RequestInit>
-    transformResponse: Array<(body: any, response: Response) => any>
-  }
+  private readonly config: FetchClientConfig
 
-  constructor (config?: FetchClientConfig) {
+  constructor (config?: Partial<FetchClientConfig>) {
     this.config = {
       responseType: undefined,
       transformRequest: [],
