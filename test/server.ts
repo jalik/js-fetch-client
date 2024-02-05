@@ -2,6 +2,13 @@
 
 import { fastify } from 'fastify'
 import { fastifyMultipart } from '@fastify/multipart'
+import http from 'http'
+
+export type RequestInfo = {
+  headers: http.IncomingHttpHeaders
+  method?: string
+  data?: unknown
+}
 
 const server = fastify()
 
@@ -40,7 +47,7 @@ server.get(paths.formData, (req, rep) => {
   rep.send(`date=${Date.now()}`)
 })
 
-server.get(paths.headers, (req) => {
+server.get(paths.headers, (req): RequestInfo => {
   return { headers: req.headers }
 })
 
@@ -50,14 +57,14 @@ server.options(paths.resource, (req, rep) => {
     .send()
 })
 
-server.delete(paths.resource, (req) => {
+server.delete(paths.resource, (req): RequestInfo => {
   return {
     headers: req.headers,
     method: req.method
   }
 })
 
-server.get(paths.resource, (req) => {
+server.get(paths.resource, (req): RequestInfo => {
   return {
     headers: req.headers,
     method: req.method,
@@ -74,7 +81,7 @@ server.get(paths.resourceWithoutContentType, (req, rep) => {
   rep.raw.end()
 })
 
-server.patch(paths.resource, (req) => {
+server.patch(paths.resource, (req): RequestInfo => {
   const { body } = req
   return {
     headers: req.headers,
@@ -92,7 +99,7 @@ server.post(paths.resources, (req, rep) => {
   })
 })
 
-server.put(paths.resource, (req) => {
+server.put(paths.resource, (req): RequestInfo => {
   const { body } = req
   return {
     headers: req.headers,

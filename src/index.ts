@@ -125,8 +125,8 @@ export class FetchClient {
    * @param url
    * @param options
    */
-  delete (url: string, options?: FetchOptions): Promise<FetchClientResponse> {
-    return this.fetch(url, {
+  delete<R> (url: string, options?: FetchOptions): Promise<FetchClientResponse<R>> {
+    return this.fetch<R>(url, {
       ...options,
       method: 'DELETE'
     })
@@ -137,7 +137,7 @@ export class FetchClient {
    * @param url
    * @param options
    */
-  async fetch (url: string, options?: FetchOptions): Promise<FetchClientResponse> {
+  async fetch<R = any> (url: string, options?: FetchOptions): Promise<FetchClientResponse<R>> {
     // Merge headers.
     const headers = new Headers({
       ...this.config.options.headers,
@@ -186,7 +186,7 @@ export class FetchClient {
     }
 
     const response = await fetch(targetUrl, opts)
-    let body: unknown
+    let body: any
     const contentLength = response.headers.get('content-length')
     const contentType = response.headers.get('content-type')
     const responseType = typeof opts.responseType !== 'undefined'
@@ -224,7 +224,7 @@ export class FetchClient {
       respHeaders[key] = value
     })
 
-    let resp: FetchClientResponse = {
+    let resp: FetchClientResponse<R> = {
       body,
       headers: respHeaders,
       original: response,
@@ -257,8 +257,8 @@ export class FetchClient {
    * @param url
    * @param options
    */
-  get (url: string, options?: FetchOptions): Promise<FetchClientResponse> {
-    return this.fetch(url, {
+  get<R> (url: string, options?: FetchOptions): Promise<FetchClientResponse<R>> {
+    return this.fetch<R>(url, {
       ...options,
       method: 'GET'
     })
@@ -269,8 +269,8 @@ export class FetchClient {
    * @param url
    * @param options
    */
-  head (url: string, options?: FetchOptions): Promise<FetchClientResponse> {
-    return this.fetch(url, {
+  head<R> (url: string, options?: FetchOptions): Promise<FetchClientResponse<R>> {
+    return this.fetch<R>(url, {
       ...options,
       method: 'HEAD'
     })
@@ -281,8 +281,8 @@ export class FetchClient {
    * @param url
    * @param options
    */
-  options (url: string, options?: FetchOptions): Promise<FetchClientResponse> {
-    return this.fetch(url, {
+  options<R> (url: string, options?: FetchOptions): Promise<FetchClientResponse<R>> {
+    return this.fetch<R>(url, {
       ...options,
       method: 'OPTIONS'
     })
@@ -294,8 +294,8 @@ export class FetchClient {
    * @param body
    * @param options
    */
-  patch (url: string, body?: any, options?: FetchOptions): Promise<FetchClientResponse> {
-    return this.fetch(url, {
+  patch<R> (url: string, body?: any, options?: FetchOptions): Promise<FetchClientResponse<R>> {
+    return this.fetch<R>(url, {
       ...options,
       body,
       method: 'PATCH'
@@ -308,8 +308,8 @@ export class FetchClient {
    * @param body
    * @param options
    */
-  post (url: string, body?: any, options?: FetchOptions): Promise<FetchClientResponse> {
-    return this.fetch(url, {
+  post<R> (url: string, body?: any, options?: FetchOptions): Promise<FetchClientResponse<R>> {
+    return this.fetch<R>(url, {
       ...options,
       body,
       method: 'POST'
@@ -322,8 +322,8 @@ export class FetchClient {
    * @param body
    * @param options
    */
-  put (url: string, body?: any, options?: FetchOptions): Promise<FetchClientResponse> {
-    return this.fetch(url, {
+  put<R> (url: string, body?: any, options?: FetchOptions): Promise<FetchClientResponse<R>> {
+    return this.fetch<R>(url, {
       ...options,
       body,
       method: 'PUT'

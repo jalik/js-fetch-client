@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals'
 import { FetchClient, FetchClientResponse, FetchResponseError } from '../src'
-import server, { paths } from './server'
+import server, { paths, RequestInfo } from './server'
 
 const port = 8888
 const serverUrl = `http://localhost:${port}`
@@ -143,7 +143,7 @@ describe('new FetchClient(options)', () => {
 
         describe('with string as body', () => {
           it('should not serialize body or change Content-Type', async () => {
-            const resp = await client.post(serverUrl + paths.resources, JSON.stringify(data), {
+            const resp = await client.post<RequestInfo>(serverUrl + paths.resources, JSON.stringify(data), {
               responseType: 'json',
               headers: { 'Content-Type': 'application/json' }
             })
@@ -179,7 +179,7 @@ describe('new FetchClient(options)', () => {
         const apiKey = 'secret'
         client.setHeader('api-key', apiKey)
 
-        const resp = await client.get(serverUrl + paths.headers, { responseType: 'json' })
+        const resp = await client.get<RequestInfo>(serverUrl + paths.headers, { responseType: 'json' })
         expect(resp.status).toBe(200)
         expect(resp.body.headers).toBeDefined()
         expect(resp.body.headers['api-key']).toEqual(apiKey)
@@ -191,7 +191,7 @@ describe('new FetchClient(options)', () => {
           client.setHeader('api-key', apiKey)
           client.setHeader('api-key', undefined)
 
-          const resp = await client.get(serverUrl + paths.headers, { responseType: 'json' })
+          const resp = await client.get<RequestInfo>(serverUrl + paths.headers, { responseType: 'json' })
           expect(resp.status).toBe(200)
           expect(resp.body.headers).toBeDefined()
           expect(resp.body.headers['api-key']).toBeUndefined()
@@ -204,7 +204,7 @@ describe('new FetchClient(options)', () => {
         const headers = { test: 'true' }
         client.setHeaders(headers)
 
-        const resp = await client.get(serverUrl + paths.headers, { responseType: 'json' })
+        const resp = await client.get<RequestInfo>(serverUrl + paths.headers, { responseType: 'json' })
         expect(resp.status).toBe(200)
         expect(resp.body.headers).toBeDefined()
         expect(resp.body.headers.test).toEqual(headers.test)
@@ -218,7 +218,7 @@ describe('new FetchClient(options)', () => {
         }
         client.setOption('mode', options.mode)
 
-        const resp = await client.get(serverUrl + paths.headers, { responseType: 'json' })
+        const resp = await client.get<RequestInfo>(serverUrl + paths.headers, { responseType: 'json' })
         expect(resp.status).toBe(200)
         expect(resp.body.headers).toBeDefined()
         expect(resp.body.headers['sec-fetch-mode']).toBe(options.mode)
@@ -232,7 +232,7 @@ describe('new FetchClient(options)', () => {
         }
         client.setOptions(options)
 
-        const resp = await client.get(serverUrl + paths.headers, { responseType: 'json' })
+        const resp = await client.get<RequestInfo>(serverUrl + paths.headers, { responseType: 'json' })
         expect(resp.status).toBe(200)
         expect(resp.body.headers).toBeDefined()
         expect(resp.body.headers['sec-fetch-mode']).toBe(options.mode)
@@ -325,7 +325,7 @@ describe('new FetchClient(options)', () => {
       })
 
       it('should return body as FormData', async () => {
-        const resp = await client.get(serverUrl + paths.formData)
+        const resp = await client.get<FormData>(serverUrl + paths.formData)
         expect(resp.status).toBe(200)
         expect(resp.body).toBeDefined()
         expect(resp.body).toBeInstanceOf(FormData)
@@ -403,7 +403,7 @@ describe('new FetchClient(options)', () => {
     })
 
     it('should be called before each request', async () => {
-      const resp = await client.get(serverUrl + paths.headers)
+      const resp = await client.get<RequestInfo>(serverUrl + paths.headers)
       expect(resp.status).toBe(200)
       expect(resp.body.headers).toBeDefined()
       expect(resp.body.headers['original-url']).toBe(serverUrl + paths.headers)
@@ -471,7 +471,7 @@ describe('new FetchClient(options)', () => {
     })
 
     it('should transform request options', async () => {
-      const resp = await client.get(serverUrl + paths.headers)
+      const resp = await client.get<RequestInfo>(serverUrl + paths.headers)
       expect(resp.status).toBe(200)
       expect(resp.body.headers).toBeDefined()
       expect(resp.body.headers.test).toBe('true')
@@ -480,6 +480,7 @@ describe('new FetchClient(options)', () => {
 
   describe('options.transformResponse', () => {
     const update = { a: true }
+    let r: Response
 
     const client = new FetchClient({
       responseType: 'json',
@@ -488,22 +489,25 @@ describe('new FetchClient(options)', () => {
           ...body,
           response
         }),
-        (body) => ({
-          ...body,
-          ...update
-        })
+        (body, response) => {
+          r = response
+          return {
+            ...body,
+            ...update
+          }
+        }
       ]
     })
 
     it('should transform response', async () => {
-      const resp = await client.get(serverUrl + paths.headers)
+      const resp = await client.get<RequestInfo & typeof update>(serverUrl + paths.headers)
       expect(resp.status).toBe(200)
       expect(resp.body.a).toBe(update.a)
     })
 
     it('should pass Response as second argument to callbacks', async () => {
-      const resp = await client.get(serverUrl + paths.headers)
-      expect(resp.body.response).toBeInstanceOf(Response)
+      await client.get(serverUrl + paths.headers)
+      expect(r).toBeInstanceOf(Response)
     })
   })
 
