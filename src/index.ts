@@ -26,7 +26,7 @@ export type FetchClientResponse<T = any> = {
   /**
    * Contains the response type.
    */
-  type: globalThis.ResponseType
+  type: ResponseType
 }
 
 export class FetchResponseError extends Error {
@@ -38,7 +38,7 @@ export class FetchResponseError extends Error {
   }
 }
 
-export type ResponseType =
+export type FetchResponseType =
   'arrayBuffer'
   | 'blob'
   | 'formData'
@@ -52,7 +52,7 @@ export type FetchOptions = RequestInit & {
    * The type of response to expect.
    * Pass undefined to ignore response body.
    */
-  responseType?: ResponseType
+  responseType?: FetchResponseType
 }
 
 export type FetchClientConfig = {
@@ -82,7 +82,7 @@ export type FetchClientConfig = {
    * The type of response to expect.
    * Pass undefined to ignore response body.
    */
-  responseType?: ResponseType
+  responseType?: FetchResponseType
   /**
    * Allow transforming the response error.
    * @param error
