@@ -18,6 +18,7 @@ HTTP client based on Fetch API with error handling and other DX improvements.
 * Transform request options and headers before sending
 * Transform response body before return
 * Transform response error before return
+* TypeScript friendly
 
 **Requires Fetch support in Browser or Node (>=18), use a polyfill to support other environments.**
 
