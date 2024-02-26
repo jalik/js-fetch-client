@@ -12,20 +12,29 @@ HTTP client based on Fetch API with error handling and other DX improvements.
 ## Features
 
 * Based on Fetch API (RequestInit + Response), with extra options
+* Works in the browser (use fetch polyfill for old browsers)
+* Works in NodeJS (since version 18)
 * Shortcut methods (DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT)
 * Global configuration for all requests (headers, options and base URL)
 * Conversion of response body using a type (json, blob, text, arrayBuffer...)
 * Transform request options and headers before sending
 * Transform response body before return
 * Transform response error before return
-* TypeScript friendly
-
-**Requires Fetch support in Browser or Node (>=18), use a polyfill to support other environments.**
+* TypeScript declarations ♥
 
 ## Sandbox
 
 Play with the lib here:
 https://codesandbox.io/s/jalik-fetch-client-demo-8rolt2?file=/src/index.js
+
+## Installing
+
+```shell
+npm i -P @jalik/fetch-client
+```
+```shell
+yarn add @jalik/fetch-client
+```
 
 ## Creating a client
 
@@ -102,7 +111,7 @@ type FetchClientResponse<T = any> = {
   /**
    * Contains the response type.
    */
-  type: globalThis.ResponseType
+  type: ResponseType
 }
 ```
 
@@ -126,7 +135,7 @@ const client = new FetchClient()
 client.get('https://jsonplaceholder.typicode.com/todos/1', {
   // Convert response body to JSON.
   // It can be done per request, or for all requests when passed to FetchClient options.
-  responseType: 'json',
+  responseType: 'json'
 })
   .then((resp) => {
     console.log(resp.body)
