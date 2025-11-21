@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { FetchClient, FetchClientResponse, FetchResponseError } from '../src'
 import server, { paths, RequestInfo } from './server'
 
@@ -428,7 +428,7 @@ describe('new FetchClient(options)', () => {
   })
 
   describe('options.transformError', () => {
-    const callback = jest.fn((error: FetchResponseError, response: FetchClientResponse) => {
+    const callback = vi.fn((error: FetchResponseError, response: FetchClientResponse) => {
       if (error.response.body?.error) {
         return new FetchResponseError(error.response.body.error, response)
       }
