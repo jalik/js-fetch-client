@@ -16,17 +16,19 @@
   "bugs": {
     "url": "https://github.com/jalik/js-fetch-client/issues"
   },
-  "sideEffects": false,
-  "esnext": "esm/index.js",
-  "main": "cjs/index.js",
-  "module": "esm/index.js",
-  "files": [
-    "/cjs",
-    "/esm"
-  ],
   "engines": {
     "node": ">=18"
   },
+  "sideEffects": false,
+  "main": "./cjs/index.js",
+  "module": "./esm/index.js",
+  "types": "./esm/index.d.ts",
+  "files": [
+    "cjs/",
+    "esm/",
+    "LICENSE.txt",
+    "README.md"
+  ],
   "scripts": {
     "build": "npm run build-cjs && npm run build-esm",
     "build-cjs": "tsc -p tsconfig.cjs.json",
