@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.3.1 (2025-11-21)
+
+- deps: upgrade dependencies
+
 ## v2.3.0 (2024-02-04)
 
 - Added generic TypeScript argument to all HTTP methods to describe response data
